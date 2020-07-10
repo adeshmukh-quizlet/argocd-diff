@@ -3428,9 +3428,11 @@ function getApps() {
 }
 function postDiffComment(appName, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log(res);
         const output = `            
   ArgoCD Diff for ${appName}:
-\`\`\`diff${res}\`\`\``;
+\`\`\`diff${res.stdout}\`\`\`
+\`\`\`diff${res.stderr}\`\`\``;
         octokit.issues.createComment({
             issue_number: github.context.issue.number,
             owner: github.context.repo.owner,
