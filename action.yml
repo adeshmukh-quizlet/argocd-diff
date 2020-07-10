@@ -2,15 +2,18 @@ name: 'ArgoCD Diff'
 description: 'Diffs all ArgoCD apps in the repo, and provides the diff as a PR comment'
 author: 'Quizlet'
 inputs:
-  ARGOCD_SERVER_URL: 
+  argocd-server-url: 
     description: ArgoCD server url (without the protocol)
     required: true
-  ARGOCD_TOKEN: 
+  argocd-token: 
     description: ArgoCD token for a local or project-scoped user https://argoproj.github.io/argo-cd/operator-manual/user-management/#local-usersaccounts-v15
     required: true
-  VERSION: 
+  argocd-version: 
     description: ArgoCD Version
     default: v1.6.1
+    required: false
+  github-token: 
+    description: Github Token
     required: true
 runs:
   using: 'node12'

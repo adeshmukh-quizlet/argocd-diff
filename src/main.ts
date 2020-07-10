@@ -17,10 +17,10 @@ interface App {
   spec: { source: { repoURL: string; path: string } };
 }
 const ARCH = process.env.ARCH || 'linux';
-const githubToken = core.getInput('GITHUB_TOKEN');
-const ARGOCD_SERVER_URL = core.getInput('ARGOCD_SERVER_URL');
-const ARGOCD_TOKEN = core.getInput('ARGOCD_TOKEN');
-const VERSION = core.getInput('VERSION');
+const githubToken = core.getInput('github-token');
+const ARGOCD_SERVER_URL = core.getInput('argocd-server-url');
+const ARGOCD_TOKEN = core.getInput('argocd-token');
+const VERSION = core.getInput('version');
 
 const octokit = github.getOctokit(githubToken);
 

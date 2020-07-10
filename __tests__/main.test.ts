@@ -6,9 +6,9 @@ import * as path from 'path';
 test('test runs', () => {
   process.env['ARCH'] = 'darwin';
   process.env['GITHUB_REPOSITORY'] = 'quizlet/cd-infra';
-  process.env['INPUT_GITHUB_TOKEN'] = '500';
-  process.env['INPUT_VERSION'] = 'v1.6.1';
-  process.env['INPUT_ARGOCD_SERVER_URL'] = 'argocd.example.com';
+  process.env['INPUT_github-token'] = '500';
+  process.env['INPUT_version'] = 'v1.6.1';
+  process.env['INPUT_argocd-server-url'] = 'argocd.example.com';
   const ip = path.join(__dirname, '..', 'lib', 'main.js');
   const options: cp.ExecSyncOptions = {
     env: process.env
