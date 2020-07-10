@@ -79,9 +79,11 @@ async function getApps(): Promise<App[]> {
   });
 }
 async function postDiffComment(appName: string, res: ExecResult): Promise<void> {
+  console.log(res);
   const output = `            
   ArgoCD Diff for ${appName}:
-\`\`\`diff${res}\`\`\``;
+\`\`\`diff${res.stdout}\`\`\`
+\`\`\`diff${res.stderr}\`\`\``;
 
   octokit.issues.createComment({
     issue_number: github.context.issue.number,
