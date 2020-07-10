@@ -3428,13 +3428,11 @@ function getApps() {
         });
     });
 }
-function postDiffComment(appName, res) {
+function postDiffComment(appName, diff) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(res);
         const output = `            
   ArgoCD Diff for ${appName}:
-\`\`\`diff${res.stdout}\`\`\`
-\`\`\`diff${res.stderr}\`\`\``;
+\`\`\`diff${diff}\`\`\``;
         octokit.issues.createComment({
             issue_number: github.context.issue.number,
             owner: github.context.repo.owner,
@@ -3447,13 +3445,17 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const argocd = yield setupArgoCDCommand();
         const apps = yield getApps();
-        console.log(apps);
+        core.info(`Found apps: ${apps.map(a => a.metadata.name).join(', ')}`);
         // eslint-disable-next-line github/array-foreach
         apps.forEach((app) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const command = `app diff ${app.metadata.name} --local=${app.spec.source.path}`;
                 const res = yield argocd(command);
-                yield postDiffComment(app.metadata.name, res);
+                core.info(res.stdout);
+                core.info(res.stderr);
+                if (res.stdout) {
+                    yield postDiffComment(app.metadata.name, res.stdout);
+                }
             }
             catch (e) {
                 core.info(e);

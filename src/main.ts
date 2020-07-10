@@ -81,12 +81,10 @@ async function getApps(): Promise<App[]> {
     );
   });
 }
-async function postDiffComment(appName: string, res: ExecResult): Promise<void> {
-  console.log(res);
+async function postDiffComment(appName: string, diff: string): Promise<void> {
   const output = `            
   ArgoCD Diff for ${appName}:
-\`\`\`diff${res.stdout}\`\`\`
-\`\`\`diff${res.stderr}\`\`\``;
+\`\`\`diff${diff}\`\`\``;
 
   octokit.issues.createComment({
     issue_number: github.context.issue.number,
@@ -99,14 +97,18 @@ async function postDiffComment(appName: string, res: ExecResult): Promise<void> 
 async function run(): Promise<void> {
   const argocd = await setupArgoCDCommand();
   const apps = await getApps();
-  console.log(apps);
+  core.info(`Found apps: ${apps.map(a => a.metadata.name).join(', ')}`);
 
   // eslint-disable-next-line github/array-foreach
   apps.forEach(async app => {
     try {
       const command = `app diff ${app.metadata.name} --local=${app.spec.source.path}`;
       const res = await argocd(command);
-      await postDiffComment(app.metadata.name, res);
+      core.info(res.stdout);
+      core.info(res.stderr);
+      if (res.stdout) {
+        await postDiffComment(app.metadata.name, res.stdout);
+      }
     } catch (e) {
       core.info(e);
     }
