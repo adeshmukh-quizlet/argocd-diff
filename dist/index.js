@@ -3371,9 +3371,10 @@ const path = __importStar(__webpack_require__(622));
 const node_fetch_1 = __importDefault(__webpack_require__(454));
 const ARCH = process.env.ARCH || 'linux';
 const githubToken = core.getInput('github-token');
+core.info(githubToken);
 const ARGOCD_SERVER_URL = core.getInput('argocd-server-url');
 const ARGOCD_TOKEN = core.getInput('argocd-token');
-const VERSION = core.getInput('version');
+const VERSION = core.getInput('argocd-version');
 const octokit = github.getOctokit(githubToken);
 function execCommand(command, failingExitCode = 1) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -3421,14 +3422,11 @@ function getApps() {
         catch (e) {
             core.error(e);
         }
-        // return (responseJson.items as App[]).filter(app => {
-        //   // TODO filter apps to only ones where they point to paths that have changed in this repo
-        //   return (
-        //     app.spec.source.repoURL ===
-        //     `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}`
-        //   );
-        // });
-        return responseJson.items;
+        return responseJson.items.filter(app => {
+            // TODO filter apps to only ones where they point to paths that have changed in this repo
+            return app.spec.source.repoURL.includes(`${github.context.repo.owner}/${github.context.repo.repo}`);
+        });
+        // return responseJson.items as App[];
     });
 }
 function postDiffComment(appName, diff) {
@@ -3456,6 +3454,8 @@ function run() {
             try {
                 const command = `app diff ${app.metadata.name} --local=${app.spec.source.path}`;
                 const res = yield argocd(command);
+                console.log(command);
+                console.log(app.spec.source.repoURL);
                 core.info(res.stdout);
                 core.info(res.stderr);
                 if (res.stdout) {
