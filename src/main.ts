@@ -63,7 +63,7 @@ async function setupArgoCDCommand(): Promise<(params: string) => Promise<ExecRes
 
 async function getApps(): Promise<App[]> {
   const url = `https://${ARGOCD_SERVER_URL}/api/v1/applications?fields=items.metadata.name,items.spec.source.path,items.spec.source.repoURL`;
-  console.log(url);
+  core.info(`Fetching apps from: ${url}`);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let responseJson: any;
   try {
@@ -81,7 +81,6 @@ async function getApps(): Promise<App[]> {
       `${github.context.repo.owner}/${github.context.repo.repo}`
     );
   });
-  // return responseJson.items as App[];
 }
 async function postDiffComment(appName: string, diff: string): Promise<void> {
   const output = `            
@@ -108,10 +107,9 @@ async function run(): Promise<void> {
     try {
       const command = `app diff ${app.metadata.name} --local=${app.spec.source.path}`;
       const res = await argocd(command);
-      console.log(command);
-      console.log(app.spec.source.repoURL);
-      core.info(res.stdout);
-      core.info(res.stderr);
+      core.info(`Running: argocd ${command}`);
+      core.info(`stdout: ${res.stdout}`);
+      core.info(`stdout: ${res.stderr}`);
       if (res.stdout) {
         await postDiffComment(app.metadata.name, res.stdout);
       }
