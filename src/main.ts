@@ -73,18 +73,21 @@ async function getApps(): Promise<App[]> {
   } catch (e) {
     core.error(e);
   }
-  return (responseJson.items as App[]).filter(app => {
-    // TODO filter apps to only ones where they point to paths that have changed in this repo
-    return (
-      app.spec.source.repoURL ===
-      `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}`
-    );
-  });
+  // return (responseJson.items as App[]).filter(app => {
+  //   // TODO filter apps to only ones where they point to paths that have changed in this repo
+  //   return (
+  //     app.spec.source.repoURL ===
+  //     `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}`
+  //   );
+  // });
+  return responseJson.items as App[];
 }
 async function postDiffComment(appName: string, diff: string): Promise<void> {
   const output = `            
   ArgoCD Diff for ${appName}:
-\`\`\`diff${diff}\`\`\``;
+\`\`\`diff
+${diff}
+\`\`\``;
 
   octokit.issues.createComment({
     issue_number: github.context.issue.number,
