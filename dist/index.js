@@ -3400,7 +3400,9 @@ function setupArgoCDCommand() {
         yield tc.downloadTool(`https://github.com/argoproj/argo-cd/releases/download/${VERSION}/argocd-${ARCH}-amd64`, argoBinaryPath);
         fs.chmodSync(path.join(argoBinaryPath), '755');
         core.addPath(argoBinaryPath);
-        return (params) => __awaiter(this, void 0, void 0, function* () { return execCommand(`${argoBinaryPath} ${params} --grpc-web --auth-token=${ARGOCD_TOKEN}`, 2); });
+        return (params) => __awaiter(this, void 0, void 0, function* () {
+            return execCommand(`${argoBinaryPath} ${params} --grpc-web --auth-token=${ARGOCD_TOKEN} --server=${ARGOCD_SERVER_URL}`, 2);
+        });
     });
 }
 function getApps() {

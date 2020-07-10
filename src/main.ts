@@ -53,7 +53,10 @@ async function setupArgoCDCommand(): Promise<(params: string) => Promise<ExecRes
   core.addPath(argoBinaryPath);
 
   return async (params: string) =>
-    execCommand(`${argoBinaryPath} ${params} --grpc-web --auth-token=${ARGOCD_TOKEN}`, 2);
+    execCommand(
+      `${argoBinaryPath} ${params} --grpc-web --auth-token=${ARGOCD_TOKEN} --server=${ARGOCD_SERVER_URL}`,
+      2
+    );
 }
 
 async function getApps(): Promise<App[]> {
