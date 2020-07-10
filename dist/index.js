@@ -3421,18 +3421,23 @@ function getApps() {
         catch (e) {
             core.error(e);
         }
-        return responseJson.items.filter(app => {
-            // TODO filter apps to only ones where they point to paths that have changed in this repo
-            return (app.spec.source.repoURL ===
-                `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}`);
-        });
+        // return (responseJson.items as App[]).filter(app => {
+        //   // TODO filter apps to only ones where they point to paths that have changed in this repo
+        //   return (
+        //     app.spec.source.repoURL ===
+        //     `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}`
+        //   );
+        // });
+        return responseJson.items;
     });
 }
 function postDiffComment(appName, diff) {
     return __awaiter(this, void 0, void 0, function* () {
         const output = `            
   ArgoCD Diff for ${appName}:
-\`\`\`diff${diff}\`\`\``;
+\`\`\`diff
+${diff}
+\`\`\``;
         octokit.issues.createComment({
             issue_number: github.context.issue.number,
             owner: github.context.repo.owner,

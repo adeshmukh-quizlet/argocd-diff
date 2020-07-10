@@ -18,9 +18,11 @@ interface App {
 }
 const ARCH = process.env.ARCH || 'linux';
 const githubToken = core.getInput('github-token');
+core.info(githubToken);
+
 const ARGOCD_SERVER_URL = core.getInput('argocd-server-url');
 const ARGOCD_TOKEN = core.getInput('argocd-token');
-const VERSION = core.getInput('version');
+const VERSION = core.getInput('argocd-version');
 
 const octokit = github.getOctokit(githubToken);
 
@@ -75,16 +77,18 @@ async function getApps(): Promise<App[]> {
   }
   return (responseJson.items as App[]).filter(app => {
     // TODO filter apps to only ones where they point to paths that have changed in this repo
-    return (
-      app.spec.source.repoURL ===
-      `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}`
+    return app.spec.source.repoURL.includes(
+      `${github.context.repo.owner}/${github.context.repo.repo}`
     );
   });
+  // return responseJson.items as App[];
 }
 async function postDiffComment(appName: string, diff: string): Promise<void> {
   const output = `            
   ArgoCD Diff for ${appName}:
-\`\`\`diff${diff}\`\`\``;
+\`\`\`diff
+${diff}
+\`\`\``;
 
   octokit.issues.createComment({
     issue_number: github.context.issue.number,
@@ -104,6 +108,8 @@ async function run(): Promise<void> {
     try {
       const command = `app diff ${app.metadata.name} --local=${app.spec.source.path}`;
       const res = await argocd(command);
+      console.log(command);
+      console.log(app.spec.source.repoURL);
       core.info(res.stdout);
       core.info(res.stderr);
       if (res.stdout) {
